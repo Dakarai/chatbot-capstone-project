@@ -1,5 +1,6 @@
 from preprocessing import pairs
 import numpy
+import re
 
 # building empty lists to hold sentences
 input_docs = []
@@ -9,7 +10,7 @@ target_docs = []
 input_tokens = set()
 target_tokens = set()
 
-for line in pairs:
+for line in pairs[:400]:
     input_doc, target_doc = line[0], line[1]
 
     # appending each input sentence to input_docs
@@ -59,7 +60,7 @@ decoder_target_data = numpy.zeros((len(input_docs), max_decoder_seq_length, num_
 
 # create one-hot vectors
 for line, (input_doc, target_doc) in enumerate(zip(input_docs, target_docs)):
-    for timestep, token in enumerate(re.findall(r"[\w']+|[^\s\w]"), input_doc):
+    for timestep, token in enumerate(re.findall(r"[\w']+|[^\s\w]", input_doc)):
         # assign 1. for the current line, timestep, and word in encoder_input_data
         encoder_input_data[line, timestep, input_features_dict[token]] = 1.
 

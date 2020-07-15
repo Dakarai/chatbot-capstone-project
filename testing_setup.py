@@ -2,7 +2,7 @@ import numpy
 from keras.layers import Input
 from keras.models import Model, load_model
 from training_model import dimensionality, decoder_lstm, decoder_inputs, decoder_dense, num_decoder_tokens
-from sequence_generation import target_features_dict
+from sequence_generation import target_features_dict, reverse_target_features_dict, max_decoder_seq_length
 
 training_model = load_model("training_model.h5")
 encoder_inputs = training_model.input[0]
@@ -26,10 +26,33 @@ def decode_response(test_input):
     states_value = encoder_model.predict(test_input)
 
     # generating empty target sequence of length 1
-    target_seq = numpy.zeroes((1, 1, num_decoder_tokens))
+    target_seq = numpy.zeros((1, 1, num_decoder_tokens))
 
     # setting the first token of target sequence with the start token
     target_seq[0, 0, target_features_dict['<START>']] = 1.
 
     # a variable to store our response word by word
-    
+    decoded_sentence = ''
+
+    stop_condition = False
+
+    while not stop_condition:
+        # predicting output tokens with probabilities and states
+        output_tokens, hidden_state, cell_state = decoder_model.predict([target_seq] + states_value)
+
+        # choosing the one with the highest probability
+        sampled_token_index = numpy.argmax(output_tokens[0, -1, :])
+        sampled_token = reverse_target_features_dict[sampled_token_index]
+        decoded_sentence += " " + sampled_token
+
+        # stop if hit max length or found the stop token
+        if (sampled_token == "<END>" or len(decoded_sentence) > max_decoder_seq_length):
+            stop_condition = True
+        # update the target sequence
+        target_seq = numpy.zeros((1, 1, num_decoder_tokens))
+        target_seq[0, 0, sampled_token_index] = 1.
+
+        # update states
+        states_value = [hidden_state, cell_state]
+
+        return decoded_sentence

@@ -7,8 +7,8 @@ from sequence_generation import num_encoder_tokens, num_decoder_tokens, encoder_
 dimensionality = 256
 
 # the batch size and number of epochs
-batch_size = 50
-epochs = 600
+batch_size = 10
+epochs = 10
 
 # encoder training setup
 encoder_inputs = Input(shape=(None, num_encoder_tokens))
@@ -28,7 +28,7 @@ training_model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
 
 # print summary (optional)
 print("Model Summary:\n")
-training_model.summart()
+training_model.summary()
 print("\n\n")
 
 # compile the model
