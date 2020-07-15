@@ -1,3 +1,4 @@
+import random
 import re
 
 # create the data files
@@ -19,5 +20,9 @@ human_lines = [" ".join(re.findall(r"\w+", line)) for line in human_lines]
 
 # again but for the robot lines
 robot_lines = [re.sub(r"\[\w+\]", "", line) for line in robot_lines]
-robot_lines = [" ".join(re.findall(r"\w+", line) for line in robot_lines)]
+robot_lines = [" ".join(re.findall(r"\w+", line)) for line in robot_lines]
+
+# zip them together into a response pair
+pairs = list(zip(human_lines, robot_lines))
+random.shuffle(pairs)
 
