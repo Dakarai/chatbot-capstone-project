@@ -21,6 +21,7 @@ decoder_outputs = decoder_dense(decoder_outputs)
 
 decoder_model = Model([decoder_inputs] + decoder_states_inputs, [decoder_outputs] + decoder_states)
 
+
 def decode_response(test_input):
     # getting the output states to pass into the decoder
     states_value = encoder_model.predict(test_input)
@@ -46,7 +47,7 @@ def decode_response(test_input):
         decoded_sentence += " " + sampled_token
 
         # stop if hit max length or found the stop token
-        if (sampled_token == "<END>" or len(decoded_sentence) > max_decoder_seq_length):
+        if sampled_token == "<END>" or len(decoded_sentence) > max_decoder_seq_length:
             stop_condition = True
         # update the target sequence
         target_seq = numpy.zeros((1, 1, num_decoder_tokens))
